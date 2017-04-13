@@ -11,6 +11,6 @@ Open a python interpreter and run those lines:
 
 ```python
 >>> import cppimport
->>> fancy_container = cppimport.imp("fancy_container")
->>> fancy_container.test
+>>> fancy = cppimport.imp("fancy")
+>>> fancy.test()
 ```
