@@ -158,7 +158,7 @@ namespace py = pybind11;
 PYBIND11_PLUGIN(measurements) {
     py::module m("measurements", "measurements custom container binding");
 		
-		py::class_<cpppc::Measurements<int> measurements(m, "Measurements");
+		py::class_<cpppc::Measurements<int>> measurements(m, "Measurements");
 		
 		measurements
 			.def("begin",    &cpppc::Measurements<int>::begin)
