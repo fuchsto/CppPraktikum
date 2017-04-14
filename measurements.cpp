@@ -158,20 +158,20 @@ namespace py = pybind11;
 PYBIND11_PLUGIN(measurements) {
     py::module m("measurements", "measurements custom container binding");
 		
-		py::class_<cpppc::Measurements> measurements(m, "Measurements");
+		py::class_<cpppc::Measurements<int> measurements(m, "Measurements");
 		
 		measurements
-			.def("begin",    &cpppc::Measurements::begin)
-			.def("end",      &cpppc::Measurements::end)
-			.def("front",    &cpppc::Measurements::front)
-			.def("back",     &cpppc::Measurements::back)
-			.def("empty",    &cpppc::Measurements::empty)
-			.def("clear",    &cpppc::Measurements::clear)
-			.def("insert",   &cpppc::Measurements::insert)
-			.def("median",   &cpppc::Measurements::median)
-			.def("mean",     &cpppc::Measurements::mean)
-			.def("variance", &cpppc::Measurements::variance)
-			.def("sigma",    &cpppc::Measurements::sigma)
+			.def("begin",    &cpppc::Measurements<int>::begin)
+			.def("end",      &cpppc::Measurements<int>::end)
+			.def("front",    &cpppc::Measurements<int>::front)
+			.def("back",     &cpppc::Measurements<int>::back)
+			.def("empty",    &cpppc::Measurements<int>::empty)
+			.def("clear",    &cpppc::Measurements<int>::clear)
+			.def("insert",   &cpppc::Measurements<int>::insert)
+			.def("median",   &cpppc::Measurements<int>::median)
+			.def("mean",     &cpppc::Measurements<int>::mean)
+			.def("variance", &cpppc::Measurements<int>::variance)
+			.def("sigma",    &cpppc::Measurements<int>::sigma)
 				
 			.def(py::self[ size_t() ])
 			.def(py::self == py::self);
