@@ -3,6 +3,7 @@ setup_pybind11(cfg)
 %>
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
+#include <pybind11/stl.h>
 
 #include <vector>
 #include <cmath>
@@ -26,87 +27,43 @@ class Measurements
 
 public:
 
-  iterator begin()
-  {
-    return _values.begin();
-  }
+  iterator begin() { return _values.begin(); }
+	
+  // const_iterator begin() const { return _values.begin(); }
 
-  const_iterator begin() const
-  {
-    return _values.begin();
-  }
+  iterator   end() { return _values.end(); }
 
-  iterator end()
-  {
-    return _values.end();
-  }
+  // const_iterator end() const { return _values.end();}
 
-  const_iterator end() const
-  {
-    return _values.end();
-  }
+  reference front()       { return _values[0];                }
+  reference back()        { return _values[_values.size()-1]; }
+  bool      empty() const { return _values.empty();           }
+	size_t    size()  const { return _values.size();            }
+	
+  reference operator[](size_t x) { return _values[x];         }
 
-  reference front()
-  {
-    return _values[0];
-  }
+  // const_reference operator[](size_t x) const { return _values[x];}
 
-  reference back()
-  {
-    return _values[_values.size()-1];
-  }
+  void clear() { return _values.clear();}
 
-  bool empty() const
-  {
-    return _values.empty();
-  }
-  size_t size() const
-  {
-    return  _values.size();
-  }
+	// void insert(const_reference ref) { _values.push_back(ref); };
 
-  reference operator[](size_t x)
-  {
-    return _values[x];
-  }
+  void insert(iterator begin, iterator end) { std::copy(begin, end, std::back_inserter(_values)); }
 
-  const_reference operator[](size_t x) const
-  {
-    return _values[x];
-  }
-
-  void clear()
-  {
-    return _values.clear();
-  }
-
-  void insert(const_reference ref)
-  {
-    _values.push_back(ref);
-  };
-
-  void insert(iterator begin, iterator end)
-  {
-    std::copy(begin, end, std::back_inserter(_values));
-  }
-
-  bool operator==(const self_t rhs) const
-  {
+  bool operator==(const self_t rhs) const {
+		
     if (size()!= rhs.size()){
       return false;
     }
     for (int i = 0; i < size(); i++)
-      if (_values[i] != rhs._values[i])
-      {
+		  if (_values[i] != rhs._values[i]) {
         return false;
       }
     return true;
   }
 
-  T median() const
-  {
-    if(empty())
-    {
+  T median() const {
+    if (empty()) {
       return 0;
     }
     std::vector<T> v= _values;
@@ -115,10 +72,8 @@ public:
   }
 
   // Funktionen gemaess Wikipedia implementiert
-  double mean() const
-  {
-    if(empty())
-    {
+  double mean() const {
+    if(empty()) {
       return 0;
     }
     auto   divident = std::accumulate(_values.begin(), _values.end(), 0);
@@ -126,8 +81,7 @@ public:
     return divident / divisor;
   }
 
-  double variance() const
-  {
+  double variance() const {
     auto divident = std::accumulate(
                       _values.begin(),
                       _values.end(),
@@ -139,13 +93,9 @@ public:
     return divident / ((double) (size()));
   }
 
-  double sigma() const
-  {
-    return (std::sqrt(variance()));
-  }
+  double sigma() const { return (std::sqrt(variance())); }
 
 private:
-
   std::vector<T> _values;
 
 };
@@ -160,21 +110,23 @@ PYBIND11_PLUGIN(measurements) {
 		
 		py::class_<cpppc::Measurements<int>> measurements(m, "Measurements");
 		
-		measurements
-			.def("begin",    &cpppc::Measurements<int>::begin)
-			.def("end",      &cpppc::Measurements<int>::end)
-			.def("front",    &cpppc::Measurements<int>::front)
-			.def("back",     &cpppc::Measurements<int>::back)
-			.def("empty",    &cpppc::Measurements<int>::empty)
-			.def("clear",    &cpppc::Measurements<int>::clear)
-			.def("insert",   &cpppc::Measurements<int>::insert)
-			.def("median",   &cpppc::Measurements<int>::median)
-			.def("mean",     &cpppc::Measurements<int>::mean)
-			.def("variance", &cpppc::Measurements<int>::variance)
-			.def("sigma",    &cpppc::Measurements<int>::sigma)
-				
-			.def(py::self[ size_t() ])
-			.def(py::self == py::self);
+		measurements.def(py::init<>());
+		measurements.def("begin",    &cpppc::Measurements<int>::begin     );
+		measurements.def("end",      &cpppc::Measurements<int>::end     );
+		measurements.def("front",    &cpppc::Measurements<int>::front   );
+		measurements.def("back",     &cpppc::Measurements<int>::back    );
+		measurements.def("empty",    &cpppc::Measurements<int>::empty   );
+		measurements.def("clear",    &cpppc::Measurements<int>::clear   );
+		measurements.def("insert",   &cpppc::Measurements<int>::insert  );
+		measurements.def("median",   &cpppc::Measurements<int>::median  );
+		measurements.def("mean",     &cpppc::Measurements<int>::mean    );
+		measurements.def("variance", &cpppc::Measurements<int>::variance);
+		measurements.def("sigma",    &cpppc::Measurements<int>::sigma   );
+			
+		measurements.def("__iter__", [](cpppc::Measurements<int> &v) {
+			return py::make_iterator(v.begin(), v.end());
+		}, py::keep_alive<0, 1>());
+		
 		return m.ptr();
 		
 }
